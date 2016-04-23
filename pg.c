@@ -19,7 +19,9 @@
 
 #define CSI "\033["
 
-enum { UP, DOWN };
+enum {
+	UP, DOWN
+};
 
 enum {
 	INIT,
@@ -28,31 +30,32 @@ enum {
 };
 
 struct ln_s {
-	char str[BUFSIZ];
-	size_t len;
-	int num;
-	TAILQ_ENTRY(ln_s) entries;
+	char 		str      [BUFSIZ];
+	size_t 		len;
+	int 		num;
+			TAILQ_ENTRY   (ln_s) entries;
 };
 
 static struct winsize scr;
 static struct termios oldt, newt;
 static struct ln_s *top;
-static TAILQ_HEAD(lnhead, ln_s) head;
+static 
+TAILQ_HEAD(lnhead, ln_s) head;
 
-void
-redraw(void)
+	void
+			redraw        (void)
 {
-	int i, last;
-	struct ln_s *p = top;
+	int 		i        , last;
+	struct ln_s    *p = top;
 
 	last = top->num + scr.ws_row;
 	puts(CSI "[H" CSI "2J");
 
-	for (i=0;i<scr.ws_row;i++) {
+	for (i = 0; i < scr.ws_row; i++) {
 		printf("\r\n%s", p->str);
 
 		if (p == TAILQ_LAST(&head, lnhead))
-			for (;i<scr.ws_row -1;i++)
+			for (; i < scr.ws_row - 1; i++)
 				puts("~\r");
 
 		p = TAILQ_NEXT(p, entries);
@@ -63,7 +66,7 @@ void
 scrctl(int sig)
 {
 	switch (sig) {
-	case INIT:
+		case INIT:
 		tcgetattr(0, &oldt);
 		newt = oldt;
 
@@ -85,8 +88,8 @@ scrctl(int sig)
 void
 scroll(int dir, int times)
 {
-	int i;
-	struct ln_s *p;
+	int 		i;
+	struct ln_s    *p;
 
 	while (times--) {
 		switch (dir) {
@@ -99,7 +102,7 @@ scroll(int dir, int times)
 		case DOWN:
 			p = top;
 
-			for(i=0;i<scr.ws_row - 4;i++) {
+			for (i = 0; i < scr.ws_row - 4; i++) {
 				p = TAILQ_NEXT(p, entries);
 
 				if (p != TAILQ_LAST(&head, lnhead))
@@ -117,11 +120,11 @@ scroll(int dir, int times)
 int
 main(void)
 {
-	char buf[BUFSIZ];
-	struct ln_s *p;
-	int i, d, done, c, n = 1;
-	char *ttydev;
-	FILE *in;
+	char 		buf      [BUFSIZ];
+	struct ln_s    *p;
+	int 		i        , d, done, c, n = 1;
+	char           *ttydev;
+	FILE           *in;
 
 	TAILQ_INIT(&head);
 	ttydev = ttyname(1);
@@ -130,7 +133,7 @@ main(void)
 		errx(1, "no file on stdin, quitting!");
 
 	/* allocate all lines */
-	while((fgets(buf, BUFSIZ, stdin)) != NULL) {
+	while ((fgets(buf, BUFSIZ, stdin)) != NULL) {
 		p = malloc(sizeof(struct ln_s));
 
 		if (p == NULL)
@@ -138,7 +141,7 @@ main(void)
 
 		strncpy(p->str, buf, BUFSIZ);
 		p->len = strnlen(p->str, BUFSIZ);
-		p->str[p->len-1] = 0;
+		p->str[p->len - 1] = 0;
 		p->num = n++;
 
 		TAILQ_INSERT_TAIL(&head, p, entries);
@@ -183,16 +186,16 @@ main(void)
 		case 'k':
 			scroll(UP, 1);
 			break;
-		/* ^C */
+			/* ^C */
 		case 3:
 		case 'q':
 		case EOF:
 			done++;
 			break;
 		case ' ':
-			scroll(DOWN, scr.ws_row/4);
+			scroll(DOWN, scr.ws_row / 4);
 			break;
-		/* alt */
+			/* alt */
 		case 27:
 			if ((c = getc(in)) == '[')
 				switch ((c = getc(in))) {
@@ -208,7 +211,7 @@ main(void)
 
 	/* free all lines */
 	while (!TAILQ_EMPTY(&head)) {
-		struct ln_s* entry = TAILQ_FIRST(&head);
+		struct ln_s    *entry = TAILQ_FIRST(&head);
 		TAILQ_REMOVE(&head, entry, entries);
 		free(entry);
 	}
