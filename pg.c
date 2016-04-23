@@ -40,7 +40,8 @@ static struct ln_s *top;
 static TAILQ_HEAD(lnhead, ln_s) head;
 
 void
-redraw(void) {
+redraw(void)
+{
 	int i, last;
 	struct ln_s *p = top;
 
@@ -59,7 +60,8 @@ redraw(void) {
 }
 
 void
-scrctl(int sig) {
+scrctl(int sig)
+{
 	switch (sig) {
 	case INIT:
 		tcgetattr(0, &oldt);
@@ -81,7 +83,8 @@ scrctl(int sig) {
 }
 
 void
-scroll(int dir, int times) {
+scroll(int dir, int times)
+{
 	int i;
 	struct ln_s *p;
 
