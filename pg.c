@@ -111,6 +111,7 @@ main(void)
 	struct ln_s *p;
 	int i, d, done, c, n = 1;
 	char *ttydev;
+	FILE *in;
 
 	TAILQ_INIT(&head);
 	ttydev = ttyname(1);
@@ -134,7 +135,7 @@ main(void)
 	}
 
 	/* reopening stdin after reading EOF */
-	stdin = freopen(ttydev, "r", stdin);
+	in = freopen(ttydev, "r", stdin);
 	close(STDIN_FILENO);
 	d = open(ttydev, O_RDONLY);
 
@@ -150,10 +151,10 @@ main(void)
 	while (!done) {
 		redraw();
 
-		c = getchar();
+		c = getc(in);
 		switch (c) {
 		case 'g':
-			if ((c = getchar()) == 'g')
+			if ((c = getc(in))) == 'g')
 				top = TAILQ_FIRST(&head);
 			break;
 		case 'G':
@@ -179,8 +180,8 @@ main(void)
 			break;
 		/* alt */
 		case 27:
-			if ((c = getchar()) == '[')
-				switch ((c = getchar())) {
+			if ((c = getc(in)) == '[')
+				switch ((c = getc(in))) {
 				case 'A':
 					scroll(UP, 1);
 					break;
