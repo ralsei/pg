@@ -177,7 +177,11 @@ main(void)
 			top = p;
 			break;
 		case '\r':
+		case 'j':
 			scroll(DOWN, 1);
+			break;
+		case 'k':
+			scroll(UP, 1);
 			break;
 		/* ^C */
 		case 3:
