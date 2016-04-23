@@ -193,9 +193,10 @@ main(void)
 	}
 
 	/* free all lines */
-	TAILQ_FOREACH(p, &head, entries) {
-		TAILQ_REMOVE(&head, p, entries);
-		free(p);
+	while (!TAILQ_EMPTY(&head)) {
+		struct ln_s* entry = TAILQ_FIRST(&head);
+		TAILQ_REMOVE(&head, entry, entries);
+		free(entry);
 	}
 
 	scrctl(CLEAN);
