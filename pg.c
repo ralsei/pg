@@ -7,7 +7,7 @@
 #include <sys/queue.h>
 #include <sys/ioctl.h>
 
-#inxlude <err.h>
+#include <err.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <signal.h>
