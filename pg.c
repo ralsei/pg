@@ -1,3 +1,9 @@
+/*
+ * pg pg.c git 04/23/2016 dead cat <dcat@iotek.org>
+ * ix <arcetera@openmailbox.org>
+ * boobah <anon>
+ */
+
 #include <sys/queue.h>
 #include <sys/ioctl.h>
 #include <termios.h>
