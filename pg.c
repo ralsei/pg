@@ -154,7 +154,7 @@ main(void)
 		c = getc(in);
 		switch (c) {
 		case 'g':
-			if ((c = getc(in))) == 'g')
+			if ((c = getc(in)) == 'g')
 				top = TAILQ_FIRST(&head);
 			break;
 		case 'G':
