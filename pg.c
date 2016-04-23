@@ -6,15 +6,16 @@
 
 #include <sys/queue.h>
 #include <sys/ioctl.h>
-#include <termios.h>
-#include <limits.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
+
+#inxlude <err.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <signal.h>
 #include <stdio.h>
-#include <err.h>
+#include <stdlib.h>
+#include <string.h>
+#include <termios.h>
+#include <unistd.h>
 
 #define CSI "\033["
 
