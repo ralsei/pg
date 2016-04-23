@@ -20,7 +20,8 @@
 #define CSI "\033["
 
 enum {
-	UP, DOWN
+	UP,
+	DOWN
 };
 
 enum {
@@ -30,17 +31,16 @@ enum {
 };
 
 struct ln_s {
-	char 		str      [BUFSIZ];
+	char 		str[BUFSIZ];
 	size_t 		len;
 	int 		num;
-			TAILQ_ENTRY   (ln_s) entries;
+	TAILQ_ENTRY   (ln_s) entries;
 };
 
 static struct winsize scr;
 static struct termios oldt, newt;
 static struct ln_s *top;
-static
-TAILQ_HEAD(lnhead, ln_s) head;
+static TAILQ_HEAD(lnhead, ln_s) head;
 
 void
 redraw(void)
@@ -118,22 +118,30 @@ scroll(int dir, int times)
 }
 
 int
-main(void)
+main(int argc, char *argv[])
 {
-	char 		buf      [BUFSIZ];
+	char 		buf[BUFSIZ];
 	struct ln_s    *p;
 	int 		i, d, done, c, n = 1;
 	char           *ttydev;
 	FILE           *in;
 
+	if (argc > 1) {
+		if(strncmp(argv[1], "-", 1)) {
+			in = fopen(argv[1], "r");
+			if (NULL == in)
+				errx(1, "unable to open file");
+		} else
+			in = stdin;
+	} else {
+		in = stdin;
+	}
+
 	TAILQ_INIT(&head);
 	ttydev = ttyname(1);
 
-	if (isatty(0))
-		errx(1, "no file on stdin, quitting!");
-
 	/* allocate all lines */
-	while ((fgets(buf, BUFSIZ, stdin)) != NULL) {
+	while ((fgets(buf, BUFSIZ, in)) != NULL) {
 		p = malloc(sizeof(struct ln_s));
 
 		if (p == NULL)
@@ -148,7 +156,7 @@ main(void)
 	}
 
 	/* reopening stdin after reading EOF */
-	in = freopen(ttydev, "r", stdin);
+	in = freopen(ttydev, "r", in);
 	close(STDIN_FILENO);
 	d = open(ttydev, O_RDONLY);
 
@@ -185,7 +193,7 @@ main(void)
 		case 'k':
 			scroll(UP, 1);
 			break;
-			/* ^C */
+		/* ^C */
 		case 3:
 		case 'q':
 		case EOF:
@@ -194,7 +202,7 @@ main(void)
 		case ' ':
 			scroll(DOWN, scr.ws_row / 4);
 			break;
-			/* alt */
+		/* alt */
 		case 27:
 			if ((c = getc(in)) == '[')
 				switch ((c = getc(in))) {
