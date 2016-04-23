@@ -39,7 +39,7 @@ struct ln_s {
 static struct winsize scr;
 static struct termios oldt, newt;
 static struct ln_s *top;
-static 
+static
 TAILQ_HEAD(lnhead, ln_s) head;
 
 	void
@@ -167,8 +167,7 @@ main(void)
 		c = getc(in);
 		switch (c) {
 		case 'g':
-			if ((c = getc(in)) == 'g')
-				top = TAILQ_FIRST(&head);
+                        top = TAILQ_FIRST(&head);
 			break;
 		case 'G':
 			p = TAILQ_LAST(&head, lnhead);
