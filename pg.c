@@ -42,10 +42,10 @@ static struct ln_s *top;
 static
 TAILQ_HEAD(lnhead, ln_s) head;
 
-	void
-			redraw        (void)
+void
+redraw(void)
 {
-	int 		i        , last;
+	int 		i, last;
 	struct ln_s    *p = top;
 
 	last = top->num + scr.ws_row;
@@ -122,7 +122,7 @@ main(void)
 {
 	char 		buf      [BUFSIZ];
 	struct ln_s    *p;
-	int 		i        , d, done, c, n = 1;
+	int 		i, d, done, c, n = 1;
 	char           *ttydev;
 	FILE           *in;
 
