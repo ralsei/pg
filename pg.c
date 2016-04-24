@@ -46,7 +46,6 @@ void
 usage(void)
 {
 	fputs("usage: pg [file]\n", stderr);
-	exit(1);
 }
 
 void
@@ -143,8 +142,10 @@ main(int argc, char *argv[])
 	} else
 		in = stdin;
 
-	if (isatty(0) && argv[1] == '\0')
+	if (isatty(0) && argv[1] == '\0') {
 		usage();
+		return 1;
+	}
 
 	TAILQ_INIT(&head);
 	ttydev = ttyname(1);
