@@ -43,6 +43,13 @@ static struct ln_s *top;
 static TAILQ_HEAD(lnhead, ln_s) head;
 
 void
+usage(void)
+{
+	printf("usage: pg [file]\n");
+	exit(1);
+}
+
+void
 redraw(void)
 {
 	int 		i, last;
@@ -133,9 +140,11 @@ main(int argc, char *argv[])
 				errx(1, "unable to open file");
 		} else
 			in = stdin;
-	} else {
+	} else
 		in = stdin;
-	}
+
+	if (isatty(0) && argv[1] == '\0')
+		usage();
 
 	TAILQ_INIT(&head);
 	ttydev = ttyname(1);
