@@ -112,7 +112,7 @@ scroll(int dir, int times)
 		case DOWN:
 			p = top;
 
-			for (i = 0; i < scr.ws_row - 4; i++) {
+			for (i = 0; i < scr.ws_row - 1; i++) {
 				p = TAILQ_NEXT(p, entries);
 
 				if (p != TAILQ_LAST(&head, lnhead))
@@ -215,7 +215,7 @@ main(int argc, char *argv[])
 			break;
 		case 'G':
 			p = TAILQ_LAST(&head, lnhead);
-			i = scr.ws_row - 4;
+			i = scr.ws_row - 1;
 
 			while (i--)
 				p = TAILQ_PREV(p, lnhead, entries);
