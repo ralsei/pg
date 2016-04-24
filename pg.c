@@ -39,7 +39,9 @@ struct ln_s {
 	TAILQ_ENTRY (ln_s) entries;
 };
 
-char *argv0;
+char         *argv0;
+FILE         *tty;
+unsigned int  x, y;
 
 static struct winsize  scr;
 static struct termios  oldt, newt;
@@ -47,10 +49,15 @@ static struct ln_s    *top;
 
 static TAILQ_HEAD(lnhead, ln_s) head;
 
-void
-usage(void)
+unsigned int
+getcup(FILE *tty, unsigned int *x, unsigned int *y)
+/* query the terminal for the cursor position. return > 0 on error. */
 {
-	fprintf(stderr, "usage: %s [file]\n", basename(argv0));
+	fputs(CSI "6n", stdout);
+	fflush(stdout);
+
+	*x = *y = 0;
+	return (fscanf(tty, CSI "%u;%uR", x, y) < 0 ? 1 : 0);
 }
 
 void
@@ -84,15 +91,18 @@ scrctl(int sig)
 
 		cfmakeraw(&newt);
 		tcsetattr(0, TCSANOW, &newt);
-		puts(CSI "?25l" CSI "?47h");
+		getcup(tty, &x, &y);
+
+		fputs(CSI "?25l" CSI "?47h", stdout);
+		fflush(stdout);
 	case UPDATE:
 		ioctl(1, TIOCGWINSZ, &scr);
 		redraw();
 		break;
 	case CLEAN:
 		tcsetattr(0, TCSANOW, &oldt);
-		puts(CSI "?25h" CSI "?47l");
-		break;
+		fprintf(stdout, CSI "%u;%uH" CSI "?25h" CSI "?47l", x, y);
+		fflush(stdout);
 	}
 }
 
@@ -132,6 +142,12 @@ scroll(int dir, int times)
 	}
 }
 
+void
+usage(void)
+{
+	fprintf(stderr, "usage: %s [file]\n", basename(argv0));
+}
+
 int
 main(int argc, char **argv)
 {
@@ -158,6 +174,13 @@ main(int argc, char **argv)
 
 	if (isatty(0) && argc < 2) {
 		usage();
+		return 1;
+	}
+
+	/* open the tty read-only for special operations */
+	if (!(tty = fopen("/dev/tty", "r"))) {
+		fprintf(stderr, "%s: cannot open \"/dev/tty\" for reading\n",
+			basename(argv0));
 		return 1;
 	}
 
