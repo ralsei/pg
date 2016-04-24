@@ -176,14 +176,15 @@ main(int argc, char *argv[])
 		TAILQ_INSERT_TAIL(&head, p, entries);
 	}
 
+	if (TAILQ_FIRST(&head) == NULL)
+		errx(1, "no input");
+
 	/* reopening stdin after reading EOF */
 	in = freopen(ttydev, "r", in);
 	close(STDIN_FILENO);
 	d = open(ttydev, O_RDONLY);
 
 	top = TAILQ_FIRST(&head);
-	if (top == NULL)
-		errx(1, "no input");
 
 	scrctl(INIT);
 	signal(SIGWINCH, scrctl);
