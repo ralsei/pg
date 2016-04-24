@@ -146,10 +146,12 @@ main(int argc, char *argv[])
 			in = fopen(argv[1], "r");
 			if (NULL == in)
 				errx(1, "unable to open file");
-		} else
+		} else {
 			in = stdin;
-	} else
+		}
+	} else {
 		in = stdin;
+	}
 
 	if (isatty(0) && argc < 2) {
 		usage();
@@ -180,6 +182,8 @@ main(int argc, char *argv[])
 	d = open(ttydev, O_RDONLY);
 
 	top = TAILQ_FIRST(&head);
+	if (top == NULL)
+		errx(1, "no input");
 
 	scrctl(INIT);
 	signal(SIGWINCH, scrctl);
