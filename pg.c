@@ -45,7 +45,7 @@ static TAILQ_HEAD(lnhead, ln_s) head;
 void
 usage(void)
 {
-	printf("usage: pg [file]\n");
+	fputs("usage: pg [file]\n", stderr);
 	exit(1);
 }
 
