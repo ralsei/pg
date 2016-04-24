@@ -250,10 +250,10 @@ main(int argc, char *argv[])
 						scroll(DOWN, scr.ws_row - 1);
 					break;
 				case 'A':
-					scroll(UP, 1);
+					scroll(UP, (mult > 1) ? mult : 1);
 					break;
 				case 'B':
-					scroll(DOWN, 1);
+					scroll(DOWN, (mult > 1) ? mult : 1);
 					break;
 				}
 		}
