@@ -9,6 +9,7 @@
 
 #include <err.h>
 #include <fcntl.h>
+#include <libgen.h>
 #include <limits.h>
 #include <signal.h>
 #include <stdio.h>
@@ -31,11 +32,13 @@ enum {
 };
 
 struct ln_s {
-	char 		str[BUFSIZ];
-	size_t 		len;
-	int 		num;
-	TAILQ_ENTRY   (ln_s) entries;
+	char        str[BUFSIZ];
+	size_t      len;
+	int         num;
+	TAILQ_ENTRY (ln_s) entries;
 };
+
+char *argv0;
 
 static struct winsize scr;
 static struct termios oldt, newt;
@@ -45,14 +48,14 @@ static TAILQ_HEAD(lnhead, ln_s) head;
 void
 usage(void)
 {
-	fputs("usage: pg [file]\n", stderr);
+	fprintf(stderr, "usage: %s [file]\n", basename(argv0));
 }
 
 void
 redraw(void)
 {
-	int 		i, last;
-	struct ln_s    *p = top;
+	int          i, last;
+	struct ln_s *p = top;
 
 	last = top->num + scr.ws_row;
 	puts(CSI "[H" CSI "2J");
@@ -72,7 +75,7 @@ void
 scrctl(int sig)
 {
 	switch (sig) {
-		case INIT:
+	case INIT:
 		tcgetattr(0, &oldt);
 		newt = oldt;
 
@@ -94,8 +97,8 @@ scrctl(int sig)
 void
 scroll(int dir, int times)
 {
-	int 		i;
-	struct ln_s    *p;
+	int          i;
+	struct ln_s *p;
 
 	while (times--) {
 		switch (dir) {
@@ -126,11 +129,13 @@ scroll(int dir, int times)
 int
 main(int argc, char *argv[])
 {
-	char 		buf[BUFSIZ];
-	struct ln_s    *p;
-	int 		i, d, done, c, n = 1;
-	char           *ttydev;
-	FILE           *in;
+	char         buf[BUFSIZ];
+	struct ln_s *p;
+	int          i, d, done, c, n = 1;
+	char        *ttydev;
+	FILE        *in;
+
+	argv0 = argv[0];
 
 	if (argc > 1) {
 		if(strncmp(argv[1], "-", 1)) {
@@ -185,7 +190,7 @@ main(int argc, char *argv[])
 		c = getc(in);
 		switch (c) {
 		case 'g':
-                        top = TAILQ_FIRST(&head);
+			top = TAILQ_FIRST(&head);
 			break;
 		case 'G':
 			p = TAILQ_LAST(&head, lnhead);
