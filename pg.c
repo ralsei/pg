@@ -142,13 +142,9 @@ main(int argc, char *argv[])
 	argv0 = argv[0];
 
 	if (argc > 1) {
-		if(strncmp(argv[1], "-", 1)) {
-			in = fopen(argv[1], "r");
-			if (NULL == in)
-				errx(1, "unable to open file");
-		} else {
-			in = stdin;
-		}
+		in = fopen(argv[1], "r");
+		if (NULL == in)
+			errx(1, "unable to open file");
 	} else {
 		in = stdin;
 	}
