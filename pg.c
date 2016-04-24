@@ -129,6 +129,10 @@ scroll(int dir, int times)
 int
 main(int argc, char *argv[])
 {
+#ifdef __OpenBSD__
+	if (pledge("stdio rpath tty", NULL) == -1)
+		err(1, "pledge");
+#endif
 	char         buf[BUFSIZ];
 	struct ln_s *p;
 	int          i, d, done, c, n = 1;
