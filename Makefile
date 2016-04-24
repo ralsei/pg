@@ -1,5 +1,5 @@
 PREFIX = /usr/local
-CFLAGS = -g
+CFLAGS = -g -Wall
 
 pg: pg.c
 

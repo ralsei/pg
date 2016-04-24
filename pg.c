@@ -5,7 +5,7 @@
  */
 
 #define CSI    "\033["
-#define BLANK  CSI "30m~" CSI "m%s"
+#define BLANK  CSI "30m~" CSI "m"
 
 #include <sys/queue.h>
 #include <sys/ioctl.h>
@@ -136,7 +136,7 @@ main(int argc, char *argv[])
 #endif
 	char         buf[BUFSIZ];
 	struct ln_s *p;
-	int          i, d, done, c, n = 1;
+	int          c, d, done, i, mult, n = 1;
 	char        *ttydev;
 	FILE        *in;
 
@@ -189,11 +189,17 @@ main(int argc, char *argv[])
 	if (d)
 		err(1, "open() opened something, but not stdin");
 
-	done = 0;
+	done = mult = 0;
 	while (!done) {
 		redraw();
-
 		c = getc(in);
+
+		/* handle numerical key multipler input */
+		if (c >= '0' && c <= '9') {
+			mult = mult * 10 + c - '0';
+			continue;
+		}
+
 		switch (c) {
 		case 'g':
 			top = TAILQ_FIRST(&head);
@@ -210,10 +216,10 @@ main(int argc, char *argv[])
 		case '\n':
 		case '\r':
 		case 'j':
-			scroll(DOWN, 1);
+			scroll(DOWN, (mult > 1) ? mult : 1);
 			break;
 		case 'k':
-			scroll(UP, 1);
+			scroll(UP, (mult > 1) ? mult : 1);
 			break;
 		case 3:   /* ^C */
 		case 'q':
@@ -236,6 +242,9 @@ main(int argc, char *argv[])
 					break;
 				}
 		}
+
+		/* reset multiplier for next command */
+		mult = 0;
 	}
 
 	/* free all lines */
