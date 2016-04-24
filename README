@@ -2,3 +2,22 @@ pg
 ==
 
 no more, no less, just a pager
+
+usage
+-----
+
+To read a file:
+
+	pg <file>
+
+Inside pg, the following keys can be used:
+
+	<Up>    j              scroll up   by one line
+	<Down>  k              scroll down by one line
+	<PgUp>  b              scroll up   by one page
+	<PgDn>  f     <Space>  scroll down by one page
+	g                      scroll to start of file
+	G                      scroll to end   of file
+	q       <C-c>          quit
+	<[0-9]>                apply a numerical multiplier to the next
+	                         command

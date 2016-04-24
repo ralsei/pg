@@ -201,6 +201,15 @@ main(int argc, char *argv[])
 		}
 
 		switch (c) {
+		case 'b':
+			/* scroll up by one "page" */
+			scroll(UP, scr.ws_row - 1);
+			break;
+		case 'f':
+		case ' ':
+			/* scroll down by one "page" */
+			scroll(DOWN, scr.ws_row - 1);
+			break;
 		case 'g':
 			top = TAILQ_FIRST(&head);
 			break;
@@ -213,27 +222,33 @@ main(int argc, char *argv[])
 
 			top = p;
 			break;
+		case 'j':
 		case '\n':
 		case '\r':
-		case 'j':
 			scroll(DOWN, (mult > 1) ? mult : 1);
 			break;
 		case 'k':
 			scroll(UP, (mult > 1) ? mult : 1);
 			break;
-		case 3:   /* ^C */
 		case 'q':
+		case 3  : /* ^C */
 		case EOF:
 			done++;
 			break;
-		case ' ':
-			/* scroll down by one "page" */
-			scroll(DOWN, scr.ws_row - 1);
-			break;
-		/* alt */
+		/* ESC */
 		case 27:
 			if ((c = getc(in)) == '[')
 				switch ((c = getc(in))) {
+				/* PgUp */
+				case '5':
+					if ((c = getc(in)) == '~')
+						scroll(UP, scr.ws_row - 1);
+					break;
+				/* PgDn */
+				case '6':
+					if ((c = getc(in)) == '~')
+						scroll(DOWN, scr.ws_row - 1);
+					break;
 				case 'A':
 					scroll(UP, 1);
 					break;
