@@ -41,9 +41,10 @@ struct ln_s {
 
 char *argv0;
 
-static struct winsize scr;
-static struct termios oldt, newt;
-static struct ln_s *top;
+static struct winsize  scr;
+static struct termios  oldt, newt;
+static struct ln_s    *top;
+
 static TAILQ_HEAD(lnhead, ln_s) head;
 
 void
@@ -132,12 +133,13 @@ scroll(int dir, int times)
 }
 
 int
-main(int argc, char *argv[])
+main(int argc, char **argv)
 {
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath tty", NULL) == -1)
 		err(1, "pledge");
 #endif
+
 	char         buf[BUFSIZ];
 	struct ln_s *p;
 	int          c, d, done, i, mult, n = 1;
@@ -193,8 +195,7 @@ main(int argc, char *argv[])
 	if (d)
 		err(1, "open() opened something, but not stdin");
 
-	done = mult = 0;
-	while (!done) {
+	for (done = mult = 0; !done; ) {
 		redraw();
 		c = getc(in);
 
@@ -204,6 +205,7 @@ main(int argc, char *argv[])
 			continue;
 		}
 
+		/* handle all other keys */
 		switch (c) {
 		case 'b':
 			/* scroll up by one "page" */
@@ -241,25 +243,29 @@ main(int argc, char *argv[])
 			break;
 		/* ESC */
 		case 27:
-			if ((c = getc(in)) == '[')
-				switch ((c = getc(in))) {
-				/* PgUp */
-				case '5':
-					if ((c = getc(in)) == '~')
-						scroll(UP, scr.ws_row - 1);
-					break;
-				/* PgDn */
-				case '6':
-					if ((c = getc(in)) == '~')
-						scroll(DOWN, scr.ws_row - 1);
-					break;
-				case 'A':
-					scroll(UP, mult);
-					break;
-				case 'B':
-					scroll(DOWN, mult);
-					break;
-				}
+			if ((c = getc(in)) != '[')
+				break;
+
+			switch ((c = getc(in))) {
+			/* PgUp */
+			case '5':
+				if ((c = getc(in)) == '~')
+					scroll(UP, scr.ws_row - 1);
+				break;
+			/* PgDn */
+			case '6':
+				if ((c = getc(in)) == '~')
+					scroll(DOWN, scr.ws_row - 1);
+				break;
+			/* Up */
+			case 'A':
+				scroll(UP, mult);
+				break;
+			/* Down */
+			case 'B':
+				scroll(DOWN, mult);
+				break;
+			}
 		}
 
 		/* reset multiplier for next command */
@@ -274,6 +280,5 @@ main(int argc, char *argv[])
 	}
 
 	scrctl(CLEAN);
-
 	return 0;
 }
