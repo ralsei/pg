@@ -101,6 +101,10 @@ scroll(int dir, int times)
 	int          i;
 	struct ln_s *p;
 
+	/* normalize multiplier */
+	if (times < 1)
+		times = 1;
+
 	while (times-- > 0) {
 		switch (dir) {
 		case UP:
@@ -225,10 +229,10 @@ main(int argc, char *argv[])
 		case 'j':
 		case '\n':
 		case '\r':
-			scroll(DOWN, (mult > 1) ? mult : 1);
+			scroll(DOWN, mult);
 			break;
 		case 'k':
-			scroll(UP, (mult > 1) ? mult : 1);
+			scroll(UP, mult);
 			break;
 		case 'q':
 		case 3  : /* ^C */
@@ -250,10 +254,10 @@ main(int argc, char *argv[])
 						scroll(DOWN, scr.ws_row - 1);
 					break;
 				case 'A':
-					scroll(UP, (mult > 1) ? mult : 1);
+					scroll(UP, mult);
 					break;
 				case 'B':
-					scroll(DOWN, (mult > 1) ? mult : 1);
+					scroll(DOWN, mult);
 					break;
 				}
 		}
