@@ -4,6 +4,9 @@
  * boobah <anon>
  */
 
+#define CSI    "\033["
+#define BLANK  CSI "30m~" CSI "m%s"
+
 #include <sys/queue.h>
 #include <sys/ioctl.h>
 
@@ -17,8 +20,6 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
-
-#define CSI "\033["
 
 enum {
 	UP,
@@ -58,14 +59,15 @@ redraw(void)
 	struct ln_s *p = top;
 
 	last = top->num + scr.ws_row;
-	puts(CSI "[H" CSI "2J");
+	fputs(CSI "H" CSI "2J", stdout);
 
 	for (i = 0; i < scr.ws_row; i++) {
-		printf("\r\n%s", p->str);
+		printf("%s%s", p->str, (i == scr.ws_row - 1) ? "" : "\r\n");
 
+		/* if EOF, fill the remainder of the view with blanks */
 		if (p == TAILQ_LAST(&head, lnhead))
 			for (; i < scr.ws_row - 1; i++)
-				puts("~\r");
+				printf(BLANK "%s", (i == scr.ws_row - 2) ? "" : "\r\n");
 
 		p = TAILQ_NEXT(p, entries);
 	}
@@ -81,15 +83,14 @@ scrctl(int sig)
 
 		cfmakeraw(&newt);
 		tcsetattr(0, TCSANOW, &newt);
-		puts(CSI "?25l");
+		puts(CSI "?25l" CSI "?47h");
 	case UPDATE:
 		ioctl(1, TIOCGWINSZ, &scr);
-		redraw();
 		redraw();
 		break;
 	case CLEAN:
 		tcsetattr(0, TCSANOW, &oldt);
-		puts(CSI "?25h");
+		puts(CSI "?25h" CSI "?47l");
 		break;
 	}
 }
@@ -100,7 +101,7 @@ scroll(int dir, int times)
 	int          i;
 	struct ln_s *p;
 
-	while (times--) {
+	while (times-- > 0) {
 		switch (dir) {
 		case UP:
 			if (top == TAILQ_FIRST(&head))
@@ -206,6 +207,7 @@ main(int argc, char *argv[])
 
 			top = p;
 			break;
+		case '\n':
 		case '\r':
 		case 'j':
 			scroll(DOWN, 1);
@@ -213,14 +215,14 @@ main(int argc, char *argv[])
 		case 'k':
 			scroll(UP, 1);
 			break;
-		/* ^C */
-		case 3:
+		case 3:   /* ^C */
 		case 'q':
 		case EOF:
 			done++;
 			break;
 		case ' ':
-			scroll(DOWN, scr.ws_row / 4);
+			/* scroll down by one "page" */
+			scroll(DOWN, scr.ws_row - 1);
 			break;
 		/* alt */
 		case 27:
