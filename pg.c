@@ -142,7 +142,7 @@ main(int argc, char *argv[])
 	} else
 		in = stdin;
 
-	if (isatty(0) && argv[1] == '\0') {
+	if (isatty(0) && argc < 2) {
 		usage();
 		return 1;
 	}
