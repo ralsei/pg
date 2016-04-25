@@ -45,7 +45,7 @@ FILE         *in;
 unsigned int  x, y;  /* initial cursor position */
 
 static struct winsize  scr;
-static struct termios  oldt, newt;
+static struct termios  t_new, t_old;
 static struct ln_s    *top;
 
 static TAILQ_HEAD(lnhead, ln_s) head;
@@ -88,11 +88,11 @@ scrctl(int sig)
 {
 	switch (sig) {
 	case INIT:
-		tcgetattr(0, &oldt);
-		newt = oldt;
+		tcgetattr(0, &t_old);
+		t_new = t_old;
 
-		cfmakeraw(&newt);
-		tcsetattr(0, TCSANOW, &newt);
+		cfmakeraw(&t_new);
+		tcsetattr(0, TCSANOW, &t_new);
 		getcup(in, &x, &y);
 
 		fputs(CSI "?25l" CSI "?47h", stdout);
@@ -102,7 +102,7 @@ scrctl(int sig)
 		redraw();
 		break;
 	case CLEAN:
-		tcsetattr(0, TCSANOW, &oldt);
+		tcsetattr(0, TCSANOW, &t_old);
 		fprintf(stdout, CSI "%u;%uH" CSI "?25h" CSI "?47l", x, y);
 		fflush(stdout);
 	}
@@ -181,7 +181,7 @@ main(int argc, char **argv)
 	ttydev = ttyname(1);
 
 	/* allocate all lines */
-	for (n = 1; (fgets(buf, BUFSIZ, in)) != NULL; ) {
+	for (n = 1; (fgets(buf, BUFSIZ, in)) != NULL; n++) {
 		p = malloc(sizeof(struct ln_s));
 
 		if (p == NULL)
@@ -190,7 +190,7 @@ main(int argc, char **argv)
 		strncpy(p->str, buf, BUFSIZ);
 		p->len = strnlen(p->str, BUFSIZ);
 		p->str[p->len - 1] = 0;
-		p->num = n++;
+		p->num = n;
 
 		TAILQ_INSERT_TAIL(&head, p, entries);
 	}
@@ -237,9 +237,12 @@ main(int argc, char **argv)
 			scroll(DOWN, scr.ws_row - 1);
 			break;
 		case 'g':
+		case '<':
 			top = TAILQ_FIRST(&head);
 			break;
+go_end:
 		case 'G':
+		case '>':
 			p = TAILQ_LAST(&head, lnhead);
 			i = scr.ws_row - 1;
 
@@ -273,6 +276,15 @@ main(int argc, char **argv)
 				break;
 
 			switch ((c = getc(in))) {
+			/* Home */
+			case 'H':
+				top = TAILQ_FIRST(&head);
+				break;
+			/* End */
+			case '4':
+				if ((c = getc(in)) == '~')
+					goto go_end;
+				break;
 			/* PgUp */
 			case '5':
 				if ((c = getc(in)) == '~')
