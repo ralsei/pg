@@ -41,7 +41,7 @@ struct ln_s {
 };
 
 char         *argv0;
-FILE         *tty;
+FILE         *in;
 unsigned int  x, y;  /* initial cursor position */
 
 static struct winsize  scr;
@@ -93,7 +93,7 @@ scrctl(int sig)
 
 		cfmakeraw(&newt);
 		tcsetattr(0, TCSANOW, &newt);
-		getcup(tty, &x, &y);
+		getcup(in, &x, &y);
 
 		fputs(CSI "?25l" CSI "?47h", stdout);
 		fflush(stdout);
@@ -162,7 +162,6 @@ main(int argc, char **argv)
 	struct ln_s *p;
 	int          c, d, done, i, mult, n = 1;
 	char        *ttydev;
-	FILE        *in;
 
 	argv0 = argv[0];
 
@@ -176,13 +175,6 @@ main(int argc, char **argv)
 
 	if (isatty(0) && argc < 2) {
 		usage();
-		return 1;
-	}
-
-	/* open the tty read-only for special operations */
-	if (!(tty = fopen("/dev/tty", "r"))) {
-		fprintf(stderr, "%s: cannot open \"/dev/tty\" for reading\n",
-			basename(argv0));
 		return 1;
 	}
 
