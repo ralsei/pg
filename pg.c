@@ -160,7 +160,7 @@ main(int argc, char **argv)
 
 	char         buf[BUFSIZ];
 	struct ln_s *p;
-	int          c, d, done, i, mult, n = 1;
+	int          c, d, done, i, mult, n;
 	char        *ttydev;
 
 	argv0 = argv[0];
@@ -169,9 +169,8 @@ main(int argc, char **argv)
 		in = fopen(argv[1], "r");
 		if (NULL == in)
 			errx(1, "unable to open file");
-	} else {
+	} else
 		in = stdin;
-	}
 
 	if (isatty(0) && argc < 2) {
 		usage();
@@ -182,7 +181,7 @@ main(int argc, char **argv)
 	ttydev = ttyname(1);
 
 	/* allocate all lines */
-	while ((fgets(buf, BUFSIZ, in)) != NULL) {
+	for (n = 1; (fgets(buf, BUFSIZ, in)) != NULL; ) {
 		p = malloc(sizeof(struct ln_s));
 
 		if (p == NULL)

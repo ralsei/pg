@@ -12,14 +12,14 @@ To read a file:
 
 Inside pg, the following keys can be used:
 
-	j       <Up>            scroll up   by one line
-	k       <Down>          scroll down by one line
-	b       <PgUp>          scroll up   by one page
-	f       <PgDn> <Space>  scroll down by one page
-	u                       scroll up   by half a page
+	j  <Down>  <Enter>      scroll down by one line
+	k  <Up>    <Backspace>  scroll up   by one line
+	f  <PgDn>  <Space>      scroll down by one page
+	b  <PgUp>               scroll up   by one page
 	d                       scroll down by half a page
+	u                       scroll up   by half a page
 	g                       scroll to start of file
 	G                       scroll to end   of file
-	q       <C-c>           quit
-	<[0-9]>                 apply a numerical multiplier to the next
+	q  <C-c>                quit
+	   <[0-9]>              apply a numerical multiplier to the next
 	                          command
