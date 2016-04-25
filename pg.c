@@ -51,8 +51,9 @@ static TAILQ_HEAD(lnhead, ln_s) head;
 
 unsigned int
 getcup(FILE *tty, unsigned int *x, unsigned int *y)
-/* query the terminal for the cursor position. return > 0 on error. */
 {
+	/* query the terminal for the cursor position. return > 0 on error. */
+
 	fputs(CSI "6n", stdout);
 	fflush(stdout);
 
@@ -255,17 +256,19 @@ main(int argc, char **argv)
 
 			top = p;
 			break;
-		case 'j':
-		case '\n':
-		case '\r':
+		case 'j'  :
+		case '\n' : /* LF */
+		case '\r' : /* CR */
 			scroll(DOWN, mult);
 			break;
-		case 'k':
+		case 'k' :
+		case   8 : /* BS  */
+		case 127 : /* DEL */
 			scroll(UP, mult);
 			break;
-		case 'q':
-		case 3  : /* ^C */
-		case EOF:
+		case 'q' :
+		case   3 : /* ^C */
+		case EOF :
 			done++;
 			break;
 		case 'u':
