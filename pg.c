@@ -41,7 +41,7 @@ struct ln_s {
 
 char         *argv0;
 FILE         *tty;
-unsigned int  x, y;
+unsigned int  x, y;  /* initial cursor position */
 
 static struct winsize  scr;
 static struct termios  oldt, newt;
@@ -57,7 +57,7 @@ getcup(FILE *tty, unsigned int *x, unsigned int *y)
 	fflush(stdout);
 
 	*x = *y = 0;
-	return (fscanf(tty, CSI "%u;%uR", x, y) < 0 ? 1 : 0);
+	return (fscanf(tty, CSI "%u;%uR", x, y) < 0) ? 1 : 0;
 }
 
 void
@@ -231,12 +231,16 @@ main(int argc, char **argv)
 		/* handle all other keys */
 		switch (c) {
 		case 'b':
-			/* scroll up by one "page" */
+			/* scroll up by one page */
 			scroll(UP, scr.ws_row - 1);
+			break;
+		case 'd':
+			/* scroll down by half a page */
+			scroll(DOWN, scr.ws_row / 2);
 			break;
 		case 'f':
 		case ' ':
-			/* scroll down by one "page" */
+			/* scroll down by one page */
 			scroll(DOWN, scr.ws_row - 1);
 			break;
 		case 'g':
@@ -263,6 +267,10 @@ main(int argc, char **argv)
 		case 3  : /* ^C */
 		case EOF:
 			done++;
+			break;
+		case 'u':
+			/* scroll up by half a page */
+			scroll(UP, scr.ws_row / 2);
 			break;
 		/* ESC */
 		case 27:
