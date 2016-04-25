@@ -4,8 +4,7 @@
  * boobah <anon>
  */
 
-#define CSI    "\033["
-#define BLANK  CSI "30m~" CSI "m"
+#define CSI "\033["
 
 #include <sys/queue.h>
 #include <sys/ioctl.h>
@@ -20,6 +19,8 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+
+#include "config.h"
 
 enum {
 	UP,
@@ -300,6 +301,12 @@ main(int argc, char **argv)
 				scroll(DOWN, mult);
 				break;
 			}
+
+			break;
+		default:
+			/* ring bell for unrecognized keys */
+			if (b_errorbell)
+				fputc('\a', stdout);
 		}
 
 		/* reset multiplier for next command */
