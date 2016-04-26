@@ -1,6 +1,15 @@
 feat:
 	- basic search
 	- regex search (iffy)
+	- line number display mode
+	- escape sequences toggle
 
 fix:
 	- don't segv on large files
+	- don't segv on scroll-down of one-line file
+	- don't mess up with lines longer than terminal window
+	- don't restore cursor position on exit if alternate buffer is not
+	  supported by terminal (this starts to get into the realm of
+	  terminal control libraries. obviously we want to avoid (n)curses
+	  and similarly huge softwares, so let's explore our possibilities
+	  here.)
