@@ -52,9 +52,7 @@ static TAILQ_HEAD(lnhead, ln_s) head;
 
 unsigned int
 getcup(FILE *tty, unsigned int *x, unsigned int *y)
-{
-	/* query the terminal for the cursor position. return > 0 on error. */
-
+{ /* query the terminal for the cursor position. return > 0 on error. */
 	fputs(CSI "6n", stdout);
 	fflush(stdout);
 
@@ -64,7 +62,7 @@ getcup(FILE *tty, unsigned int *x, unsigned int *y)
 
 void
 redraw(void)
-{
+{ /* redraw the screen */
 	int          i, last;
 	struct ln_s *p = top;
 
@@ -85,7 +83,7 @@ redraw(void)
 
 void
 scrctl(int sig)
-{
+{ /* 'screen control' - initialize/update/clean screen */
 	switch (sig) {
 	case INIT:
 		tcgetattr(0, &t_old);
@@ -110,7 +108,7 @@ scrctl(int sig)
 
 void
 scroll(int dir, int times)
-{
+{ /* scroll, duh */
 	int          i;
 	struct ln_s *p;
 
