@@ -221,86 +221,86 @@ main(int argc, char **argv)
 
 		/* handle all other keys */
 		switch (c) {
-			case 'b':
-				/* scroll up by one page */
-				scroll(UP, scr.ws_row - 1);
+		case 'b':
+			/* scroll up by one page */
+			scroll(UP, scr.ws_row - 1);
+			break;
+		case 'd':
+			/* scroll down by half a page */
+			scroll(DOWN, scr.ws_row / 2);
+			break;
+		case 'f':
+		case ' ':
+			/* scroll down by one page */
+			scroll(DOWN, scr.ws_row - 1);
+			break;
+		case 'g':
+		case '<':
+			top = TAILQ_FIRST(&head);
+			break;
+go_end:
+		case 'G':
+		case '>':
+			p = TAILQ_LAST(&head, lnhead);
+			i = scr.ws_row - 1;
+
+			while (i--)
+				p = TAILQ_PREV(p, lnhead, entries);
+
+			top = p;
+			break;
+		case K_DOWN :
+		case '\n'   : /* LF */
+		case '\r'   : /* CR */
+			scroll(DOWN, mult);
+			break;
+		case K_UP :
+		case   8  : /* BS  */
+		case 127  : /* DEL */
+			scroll(UP, mult);
+			break;
+		case 'q' :
+		case   3 : /* ^C */
+		case EOF :
+			done++;
+			break;
+		case 'u':
+			/* scroll up by half a page */
+			scroll(UP, scr.ws_row / 2);
+			break;
+		/* ESC */
+		case 27:
+			if ((c = getc(in)) != '[')
 				break;
-			case 'd':
-				/* scroll down by half a page */
-				scroll(DOWN, scr.ws_row / 2);
-				break;
-			case 'f':
-			case ' ':
-				/* scroll down by one page */
-				scroll(DOWN, scr.ws_row - 1);
-				break;
-			case 'g':
-			case '<':
+
+			switch ((c = getc(in))) {
+			/* Home */
+			case 'H':
 				top = TAILQ_FIRST(&head);
 				break;
-go_end:
-			case 'G':
-			case '>':
-				p = TAILQ_LAST(&head, lnhead);
-				i = scr.ws_row - 1;
-
-				while (i--)
-					p = TAILQ_PREV(p, lnhead, entries);
-
-				top = p;
+			/* End */
+			case '4':
+				if ((c = getc(in)) == '~')
+					goto go_end;
 				break;
-			case vidn :
-			case '\n' : /* LF */
-			case '\r' : /* CR */
-				scroll(DOWN, mult);
+			/* PgUp */
+			case '5':
+				if ((c = getc(in)) == '~')
+					scroll(UP, scr.ws_row - 1);
 				break;
-			case viup:
-			case   8 : /* BS  */
-			case 127 : /* DEL */
+			/* PgDn */
+			case '6':
+				if ((c = getc(in)) == '~')
+					scroll(DOWN, scr.ws_row - 1);
+				break;
+			/* Up */
+			case 'A':
 				scroll(UP, mult);
 				break;
-			case 'q' :
-			case   3 : /* ^C */
-			case EOF :
-				done++;
+			/* Down */
+			case 'B':
+				scroll(DOWN, mult);
 				break;
-			case 'u':
-				/* scroll up by half a page */
-				scroll(UP, scr.ws_row / 2);
-				break;
-			/* ESC */
-			case 27:
-				if ((c = getc(in)) != '[')
-					break;
-
-				switch ((c = getc(in))) {
-				/* Home */
-				case 'H':
-					top = TAILQ_FIRST(&head);
-					break;
-				/* End */
-				case '4':
-					if ((c = getc(in)) == '~')
-						goto go_end;
-					break;
-				/* PgUp */
-				case '5':
-					if ((c = getc(in)) == '~')
-						scroll(UP, scr.ws_row - 1);
-					break;
-				/* PgDn */
-				case '6':
-					if ((c = getc(in)) == '~')
-						scroll(DOWN, scr.ws_row - 1);
-					break;
-				/* Up */
-				case 'A':
-					scroll(UP, mult);
-					break;
-				/* Down */
-				case 'B':
-					scroll(DOWN, mult);
-					break;
 			}
 
 			break;
