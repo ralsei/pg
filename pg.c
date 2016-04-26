@@ -249,12 +249,12 @@ go_end:
 
 				top = p;
 				break;
-			case 'j'  :
+			case vidn :
 			case '\n' : /* LF */
 			case '\r' : /* CR */
 				scroll(DOWN, mult);
 				break;
-			case 'k' :
+			case viup:
 			case   8 : /* BS  */
 			case 127 : /* DEL */
 				scroll(UP, mult);
