@@ -1,0 +1,6 @@
+feat:
+	- basic search
+	- regex search (iffy)
+
+fix:
+	- don't segv on large files

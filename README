@@ -3,6 +3,12 @@ pg
 
 no more, no less, just a pager
 
+install
+-------
+
+	$ make
+	# make install
+
 usage
 -----
 
