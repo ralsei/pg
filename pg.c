@@ -4,8 +4,6 @@
  * boobah <anon>
  */
 
-#define CSI "\033["
-
 #include <sys/queue.h>
 #include <sys/ioctl.h>
 
@@ -21,34 +19,7 @@
 #include <unistd.h>
 
 #include "config.h"
-
-enum {
-	UP,
-	DOWN
-};
-
-enum {
-	INIT,
-	UPDATE = SIGWINCH,
-	CLEAN
-};
-
-struct ln_s {
-	char        str[BUFSIZ];
-	size_t      len;
-	int         num;
-	TAILQ_ENTRY (ln_s) entries;
-};
-
-char         *argv0;
-FILE         *in;
-unsigned int  x, y;  /* initial cursor position */
-
-static struct winsize  scr;
-static struct termios  t_new, t_old;
-static struct ln_s    *top;
-
-static TAILQ_HEAD(lnhead, ln_s) head;
+#include "pg.h"
 
 unsigned int
 getcup(FILE *tty, unsigned int *x, unsigned int *y)
