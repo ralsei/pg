@@ -1,5 +1,8 @@
 /* pg pg.h git 04/30/2016 ix <arcetera@openmailbox.org */
 
+#ifndef PG_H__
+#define PG_H__
+
 #define CSI "\033["
 
 enum {
@@ -29,3 +32,5 @@ static struct termios  t_new, t_old;
 static struct ln_s    *top;
 
 static TAILQ_HEAD(lnhead, ln_s) head;
+
+#endif /* end of include guard: PG_H__ */
