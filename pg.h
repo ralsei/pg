@@ -33,4 +33,11 @@ static struct ln_s    *top;
 
 static TAILQ_HEAD(lnhead, ln_s) head;
 
+/* function declarations */
+unsigned int getcup(FILE *, unsigned int *, unsigned int *);
+void         redraw(void);
+void         scrctl(int);
+void         scroll(int, int);
+void         usage(void);
+
 #endif /* end of include guard: PG_H__ */
