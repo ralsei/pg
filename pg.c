@@ -294,4 +294,4 @@ go_end:
     scrctl(CLEAN);
     return 0;
 }
-/* vim:ts=4:et: */
+/* vim set ts=4 et: */
