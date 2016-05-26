@@ -2,6 +2,7 @@ PREFIX = /usr/local
 CFLAGS = -g -Wall
 
 pg: config.h pg.h pg.c
+	$(CC) $(CFLAGS) -o pg pg.c
 
 clean:
 	rm -f pg
