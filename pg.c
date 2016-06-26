@@ -21,13 +21,13 @@
 #include "pg.h"
 
 unsigned int
-getcup(FILE *tty, unsigned int *x, unsigned int *y)
+getcup(FILE *tty, unsigned int *y, unsigned int *x)
 { /* query the terminal for the cursor position. return > 0 on error. */
     fputs(CSI "6n", stdout);
     fflush(stdout);
 
     *x = *y = 0;
-    return (fscanf(tty, CSI "%u;%uR", x, y) < 0) ? 1 : 0;
+    return (fscanf(tty, CSI "%u;%uR", y, x) < 0) ? 1 : 0;
 }
 
 void
@@ -61,7 +61,7 @@ scrctl(int sig)
 
         cfmakeraw(&t_new);
         tcsetattr(0, TCSANOW, &t_new);
-        getcup(in, &x, &y);
+        getcup(in, &y, &x);
 
         fputs(CSI "?25l" CSI "?47h", stdout);
         fflush(stdout);
@@ -71,7 +71,7 @@ scrctl(int sig)
         break;
     case CLEAN:
         tcsetattr(0, TCSANOW, &t_old);
-        fprintf(stdout, CSI "%u;%uH" CSI "?25h" CSI "?47l", x, y);
+        fprintf(stdout, CSI "%u;%uH" CSI "?25h" CSI "?47l", y, x);
         fflush(stdout);
     }
 }
