@@ -20,6 +20,8 @@
 #include "config.h"
 #include "pg.h"
 
+unsigned preserve;
+
 unsigned int
 getcup(FILE *tty, unsigned int *y, unsigned int *x)
 { /* query the terminal for the cursor position. return > 0 on error. */
@@ -71,7 +73,12 @@ scrctl(int sig)
         break;
     case CLEAN:
         tcsetattr(0, TCSANOW, &t_old);
-        fprintf(stdout, CSI "%u;%uH" CSI "?25h" CSI "?47l", y, x);
+		fprintf(stdout, CSI "?25h" CSI "?47l");
+        if (preserve) {
+            redraw();
+            fputs(CSI "2K\r", stdout);
+        } else
+            fprintf(stdout, CSI "%u;%uH", y, x);
         fflush(stdout);
     }
 }
@@ -179,7 +186,7 @@ main(int argc, char **argv)
     if (d)
         err(1, "open() opened something, but not stdin");
 
-    for (done = mult = 0; !done; ) {
+    for (done = mult = preserve = 0; !done; ) {
         redraw();
         c = getc(in);
 
@@ -229,6 +236,8 @@ go_end:
         case 127  : /* DEL */
             scroll(UP, mult);
             break;
+        case 'Q' :
+            preserve = 1;
         case 'q' :
         case   3 : /* ^C */
         case EOF :
@@ -284,6 +293,8 @@ go_end:
         mult = 0;
     }
 
+    scrctl(CLEAN);
+
     /* free all lines */
     while (!TAILQ_EMPTY(&head)) {
         struct ln_s    *entry = TAILQ_FIRST(&head);
@@ -291,7 +302,6 @@ go_end:
         free(entry);
     }
 
-    scrctl(CLEAN);
     return 0;
 }
 /* vim set ts=4 et: */

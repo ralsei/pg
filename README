@@ -27,5 +27,6 @@ Inside pg, the following keys can be used:
 	g                       scroll to start of file
 	G                       scroll to end   of file
 	q  <C-c>                quit
+	Q                       quit, preserving display of the current page
 	   <[0-9]>              apply a numerical multiplier to the next
 	                          command
