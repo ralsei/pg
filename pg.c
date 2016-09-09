@@ -73,7 +73,7 @@ scrctl(int sig)
         break;
     case CLEAN:
         tcsetattr(0, TCSANOW, &t_old);
-		fprintf(stdout, CSI "?25h" CSI "?47l");
+        fprintf(stdout, CSI "?25h" CSI "?47l");
         if (preserve) {
             redraw();
             fputs(CSI "2K\r", stdout);
